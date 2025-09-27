@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <Button
+        android:id="@+id/gameButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Game" />
+
+    <Button
+        android:id="@+id/twoLanesButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2 Lanes" />
+
+    <Button
+        android:id="@+id/threeLanesButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="3 Lanes" />
+
+    <Button
+        android:id="@+id/fourLanesButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="4 Lanes" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Frequency"
+        android:layout_marginTop="20dp"/>
+
+    <SeekBar
+        android:id="@+id/frequencySeekBar"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:progress="33" />
+
+    <TextView
+        android:id="@+id/frequencyValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="33" />
+
+</LinearLayout>

@@ -1,0 +1,77 @@
+
+# Android/IntelliJ
+*.iml
+*.hprof
+*.idea/
+*.DS_Store
+.gradle/
+build/
+captures/
+.externalNativeBuild/
+caches/
+local.properties
+app/**/build/
+**/build/
+outputs/
+.intermediates/
+
+# Keystore files
+*.jks
+*.keystore
+
+# Gradle files
+.gradle/
+build/
+*/build/
+!gradle/wrapper/gradle-wrapper.jar
+**/gradle-union
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Log and temp files
+*.log
+*.temp
+*.tmp
+
+# Android studio bookmarks
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/dictionaries
+.idea/libraries
+
+# Mac OS specific files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows specific files
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+
+# Linux specific files
+*~
+
+# Kotlin/Java build
+build/
+
+# Proguard
+proguard/
+
+# NDK
+obj/
+*.so
+*.o
+.libs/
+*.dwo
+
+# Kotlin
+*.ktlint
+
+# Ignore Gradle Wrapper JAR files
+!gradle-wrapper.jar
+
+# R8 files
+out/
