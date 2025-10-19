@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">2048</string>
+    <string name="score">0</string>
+    <string name="best_score">0</string>
+    <string name="score_label">SCORE</string>
+    <string name="best_label">BEST</string>
+    <string name="reset">NEW GAME</string>
+    <string name="you_won">You Won!</string>
+    <string name="win_message">Congratulations! You reached 2048!</string>
+    <string name="continue_game">Continue</string>
+    <string name="new_game">New Game</string>
+    <string name="game_over">Game Over!</string>
+    <string name="game_over_message">No more moves available. Try again!</string>
+    <string name="try_again">Try Again</string>
+    <string name="reset_game">Reset Game</string>
+    <string name="reset_message">Are you sure you want to start a new game?</string>
+    <string name="cancel">Cancel</string>
+    <string name="instructions">Swipe to move tiles. Join tiles with the same number to double them!</string>
+</resources>

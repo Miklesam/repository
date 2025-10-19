@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="background_color">#FFFAF8EF</color>
+    <color name="text_color">#FF776E65</color>
+    <color name="score_background_color">#FFBBADA0</color>
+    <color name="score_text_color">#FFF9F6F2</color>
+    <color name="button_background_color">#FF8F7A66</color>
+    <color name="button_text_color">#FFF9F6F2</color>
+    <color name="instruction_text_color">#FF776E65</color>
+    
+    <!-- Tile colors -->
+    <color name="tile_2">#FFEEE4DA</color>
+    <color name="tile_4">#FFEDE0C8</color>
+    <color name="tile_8">#FFF2B179</color>
+    <color name="tile_16">#FFF59563</color>
+    <color name="tile_32">#FFF67C5F</color>
+    <color name="tile_64">#FFF65E3B</color>
+    <color name="tile_128">#FFEDCF72</color>
+    <color name="tile_256">#FFEDCC61</color>
+    <color name="tile_512">#FFEDC850</color>
+    <color name="tile_1024">#FFEDC53F</color>
+    <color name="tile_2048">#FFEDC22E</color>
+    <color name="tile_super">#FF3C3A32</color>
+    
+    <!-- Text colors -->
+    <color name="tile_text_dark">#FF776E65</color>
+    <color name="tile_text_light">#FFF9F6F2</color>
+</resources>

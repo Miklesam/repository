@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.Game2048" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/button_background_color</item>
+        <item name="colorPrimaryVariant">@color/button_background_color</item>
+        <item name="colorOnPrimary">@color/button_text_color</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/score_background_color</item>
+        <item name="colorSecondaryVariant">@color/score_background_color</item>
+        <item name="colorOnSecondary">@color/score_text_color</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+    </style>
+</resources>
