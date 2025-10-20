@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 include 'games:0'
 include 'games:1'
 include 'games:2'
+include 'games:3'

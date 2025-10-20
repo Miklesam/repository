@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- Game colors -->
+    <color name="background">#FF2E3440</color>
+    <color name="game_board">#FF3B4252</color>
+    <color name="gem_red">#FFBF616A</color>
+    <color name="gem_blue">#FF5E81AC</color>
+    <color name="gem_green">#FFA3BE8C</color>
+    <color name="gem_yellow">#FFEBCB8B</color>
+    <color name="gem_purple">#FFB48EAD</color>
+    <color name="gem_orange">#FFD08770</color>
+    <color name="text_primary">#FFECEFF4</color>
+    <color name="text_secondary">#FFD8DEE9</color>
+    <color name="button_background">#FF4C566A</color>
+</resources>

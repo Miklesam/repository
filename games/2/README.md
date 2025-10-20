@@ -66,3 +66,6 @@ A classic 2048 puzzle game built with Kotlin for Android Studio.
 - **Reset Functionality**: Easy game reset with confirmation dialog
 
 Enjoy playing 2048! 🎯
+
+
+

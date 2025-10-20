@@ -120,3 +120,4 @@ class MainActivity : AppCompatActivity(), Game2048View.OnGameStateChangeListener
             .show()
     }
 }
+

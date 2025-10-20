@@ -4,3 +4,6 @@
     <solid android:color="@color/score_background_color" />
     <corners android:radius="6dp" />
 </shape>
+
+
+
