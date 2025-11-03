@@ -25,7 +25,7 @@ class FlappyBirdView @JvmOverloads constructor(
     private var bestScore = 0
     
     private val paint = Paint().apply {
-        color = 0xFF87CEEB.toInt() // Sky blue background
+        color = 0xFFFFFFFF.toInt() // White background
         isAntiAlias = true
     }
     
@@ -103,10 +103,10 @@ class FlappyBirdView @JvmOverloads constructor(
         pipes.removeAll { it.isOffScreen() }
         
         // Add new pipes
-        if (pipes.isEmpty() || pipes.last().getX() < width - 300f) {
+        if (pipes.isEmpty() || pipes.last().getX() < width - 500f) {
             pipes.add(Pipe(
                 x = width.toFloat(),
-                gapSize = 300f,
+                gapSize = 500f,  // Increased gap for easier gameplay
                 screenHeight = height.toFloat()
             ))
         }
@@ -150,7 +150,7 @@ class FlappyBirdView @JvmOverloads constructor(
         super.onDraw(canvas)
         
         // Draw background
-        canvas.drawColor(0xFF87CEEB.toInt())
+        canvas.drawColor(0xFFFFFFFF.toInt())
         
         // Draw bird
         bird?.draw(canvas)

@@ -12,7 +12,7 @@ class Pipe(
 ) {
     private val pipeSpeed = 5f
     private val paint = Paint().apply {
-        color = 0xFF2E8B57.toInt() // Pipe green color
+        color = 0xFF000000.toInt() // Black pipes
         isAntiAlias = true
     }
     
