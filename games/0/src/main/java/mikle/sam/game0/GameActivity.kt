@@ -19,7 +19,7 @@ class GameActivity : AppCompatActivity() {
         setContentView(gameView)
 
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-        window.navigationBarColor = Color.BLACK
+        window.navigationBarColor = Color.WHITE
     }
 
     override fun onResume() {

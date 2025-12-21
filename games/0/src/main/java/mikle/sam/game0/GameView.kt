@@ -2,8 +2,6 @@ package mikle.sam.game0
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -39,25 +37,25 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private var increasingLanes = true
     private var speedBoost = 0f
     private val scorePaint = Paint().apply {
-        color = Color.WHITE
+        color = Color.BLACK
         textSize = 50f
     }
     private val bestScorePaint = Paint().apply {
-        color = Color.WHITE
+        color = Color.BLACK
         textSize = 50f
         textAlign = Paint.Align.CENTER
     }
     private val gameOverPaint = Paint().apply {
-        color = Color.WHITE
+        color = Color.BLACK
         textSize = 100f
         textAlign = Paint.Align.CENTER
     }
     private val lanePaint = Paint().apply {
-        color = Color.WHITE
+        color = Color.BLACK
         strokeWidth = 10f
     }
     private val pausePaint = Paint().apply {
-        color = Color.WHITE
+        color = Color.BLACK
         textSize = 100f
         textAlign = Paint.Align.CENTER
     }
@@ -71,7 +69,6 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private var gameStartTime = 0L
     private var lastLaneAddTime = 0L
     private var pauseStartTime = 0L
-    private lateinit var squareObstacleFrames: List<Bitmap>
     private var lastSpawnEmptyLanes = setOf<Int>()
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("GamePrefs", Context.MODE_PRIVATE)
 
@@ -92,27 +89,7 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         super.onSizeChanged(w, h, oldw, oldh)
         // Define lane positions based on screen width
         updateLanePositions(w)
-        val animationFrames = listOf(
-            BitmapFactory.decodeResource(resources, R.drawable.player_anim_1),
-            BitmapFactory.decodeResource(resources, R.drawable.player_anim_2),
-            BitmapFactory.decodeResource(resources, R.drawable.player_anim_3),
-            BitmapFactory.decodeResource(resources, R.drawable.player_anim_4),
-            BitmapFactory.decodeResource(resources, R.drawable.player_anim_5),
-            BitmapFactory.decodeResource(resources, R.drawable.player_anim_6),
-            BitmapFactory.decodeResource(resources, R.drawable.player_anim_7),
-            BitmapFactory.decodeResource(resources, R.drawable.player_anim_8)
-        )
-        player = Player(animationFrames, h, lanePositions)
-        squareObstacleFrames = listOf(
-            BitmapFactory.decodeResource(resources, R.drawable.square_anim_1),
-            BitmapFactory.decodeResource(resources, R.drawable.square_anim_2),
-            BitmapFactory.decodeResource(resources, R.drawable.square_anim_3),
-            BitmapFactory.decodeResource(resources, R.drawable.square_anim_4),
-            BitmapFactory.decodeResource(resources, R.drawable.square_anim_5),
-            BitmapFactory.decodeResource(resources, R.drawable.square_anim_6),
-            BitmapFactory.decodeResource(resources, R.drawable.square_anim_7),
-            BitmapFactory.decodeResource(resources, R.drawable.square_anim_8)
-        )
+        player = Player(h, lanePositions)
     }
 
     fun setGameParameters(lanes: Int, frequency: Int) {
@@ -244,7 +221,7 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             if (lane < lanePositions.size) {
             val x = lanePositions[lane]
             val type = ObstacleType.SQUARE
-            val obstacle = Obstacle(x, 0f, type, squareObstacleFrames, speedBoost)
+            val obstacle = Obstacle(x, 0f, type, speedBoost)
 
             if (slowdownActive) {
                 obstacle.slowDown()
@@ -260,7 +237,7 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas.drawColor(Color.BLACK)
+        canvas.drawColor(Color.WHITE)
         if (isAnimatingLaneChange && oldLaneCount > 0) {
             val elapsedTime = System.currentTimeMillis() - laneChangeStartTs
             var progress = (elapsedTime.toFloat() / laneChangeAnimationDuration).coerceAtMost(1f)
