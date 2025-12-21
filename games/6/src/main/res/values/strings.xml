@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Zen Garden</string>
+    <string name="score">Очки: %1$d</string>
+    <string name="combo">Комбо x%1$d!</string>
+    <string name="reset">Очистить</string>
+    <string name="instructions">Размещайте элементы на саду, создавая паттерны из 3+ одинаковых элементов рядом</string>
+    <string name="stone">Камень</string>
+    <string name="flower">Цветок</string>
+    <string name="leaf">Лист</string>
+    <string name="water">Вода</string>
+</resources>

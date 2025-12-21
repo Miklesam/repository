@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#1A1A2E</color>
+    <color name="primary">#0F3460</color>
+    <color name="primaryVariant">#16213E</color>
+    <color name="secondary">#E94560</color>
+    <color name="secondaryVariant">#C73E5A</color>
+    <color name="surface">#16213E</color>
+    <color name="onPrimary">#FFFFFF</color>
+    <color name="onSecondary">#FFFFFF</color>
+    <color name="onBackground">#FFFFFF</color>
+    <color name="onSurface">#FFFFFF</color>
+    <color name="paddle">#4A9EFF</color>
+    <color name="ball">#FFD700</color>
+    <color name="brick_1">#E94560</color>
+    <color name="brick_2">#FF6B9D</color>
+    <color name="brick_3">#FFA500</color>
+    <color name="brick_4">#FFD700</color>
+    <color name="brick_5">#4ECDC4</color>
+</resources>
+
+

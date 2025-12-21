@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#87CEEB</color>
+    <color name="primary">#4169E1</color>
+    <color name="primaryVariant">#1E3A8A</color>
+    <color name="secondary">#FFD700</color>
+    <color name="secondaryVariant">#FFA500</color>
+    <color name="surface">#E0F2FE</color>
+    <color name="onPrimary">#FFFFFF</color>
+    <color name="onSecondary">#000000</color>
+    <color name="onBackground">#FFFFFF</color>
+    <color name="onSurface">#000000</color>
+    <color name="platform">#228B22</color>
+    <color name="player">#FF6347</color>
+    <color name="coin">#FFD700</color>
+    <color name="spike">#8B0000</color>
+</resources>
+
+

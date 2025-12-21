@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#0A0A1A</color>
+    <color name="primary">#4A9EFF</color>
+    <color name="primaryVariant">#2D5F8F</color>
+    <color name="secondary">#FFD700</color>
+    <color name="secondaryVariant">#FFA500</color>
+    <color name="surface">#1A1A2E</color>
+    <color name="onPrimary">#FFFFFF</color>
+    <color name="onSecondary">#000000</color>
+    <color name="onBackground">#FFFFFF</color>
+    <color name="onSurface">#FFFFFF</color>
+    <color name="obstacle">#FF4444</color>
+    <color name="star">#FFD700</color>
+    <color name="ship">#4A9EFF</color>
+</resources>
+
+

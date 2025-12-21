@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#F5F5DC</color>
+    <color name="garden_background">#E8E8D8</color>
+    <color name="primary">#8B7355</color>
+    <color name="secondary">#A8C090</color>
+    <color name="accent">#FF6B9D</color>
+    <color name="text_primary">#4A4A4A</color>
+    <color name="text_secondary">#8B8B8B</color>
+    <color name="pattern_glow">#FFD93D</color>
+    <color name="button_selected">#4ECDC4</color>
+</resources>

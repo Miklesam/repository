@@ -18,8 +18,18 @@ class Game2048(private val size: Int = 4) {
     fun isWon(): Boolean = won
     fun isOver(): Boolean = over
     
+    private val oldGridValues = Array(4) { IntArray(4) }
+    
     fun move(direction: Direction): Boolean {
         if (over) return false
+        
+        // Save all positions and values before move for animation
+        for (x in 0 until size) {
+            for (y in 0 until size) {
+                grid[x][y].savePosition()
+                oldGridValues[x][y] = grid[x][y].value
+            }
+        }
         
         var moved = false
         
@@ -28,6 +38,24 @@ class Game2048(private val size: Int = 4) {
             Direction.DOWN -> moved = moveDown()
             Direction.LEFT -> moved = moveLeft()
             Direction.RIGHT -> moved = moveRight()
+        }
+        
+        // Start animations for tiles that moved or merged
+        for (x in 0 until size) {
+            for (y in 0 until size) {
+                val tile = grid[x][y]
+                if (tile.value != 0) {
+                    // Check if position changed
+                    if (tile.targetX != tile.x || tile.targetY != tile.y) {
+                        tile.startMoveAnimation(tile.x, tile.y)
+                    }
+                    // Check if value doubled (merged) - compare with old value at this position
+                    val oldValue = oldGridValues[x][y]
+                    if (oldValue > 0 && tile.value == oldValue * 2) {
+                        tile.startMergeAnimation()
+                    }
+                }
+            }
         }
         
         if (moved) {

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Brick Breaker</string>
+    <string name="play">Играть</string>
+    <string name="play_again">Играть снова</string>
+    <string name="next_level">Следующий уровень</string>
+    <string name="tap_to_start">Нажмите «Играть» и управляйте платформой, касаясь экрана</string>
+    <string name="score_label">Очки: %1$d</string>
+    <string name="lives_label">Жизни: %1$d</string>
+    <string name="level_label">Уровень: %1$d</string>
+    <string name="score_label_placeholder">Очки: 0</string>
+    <string name="lives_label_placeholder">Жизни: 3</string>
+    <string name="level_label_placeholder">Уровень: 1</string>
+    <string name="game_over_message">Игра окончена!\nОчки: %1$d\nУровень: %2$d</string>
+    <string name="level_complete">Уровень %1$d пройден!</string>
+</resources>
+
+

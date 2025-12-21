@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Space Runner</string>
+    <string name="play">Играть</string>
+    <string name="play_again">Играть снова</string>
+    <string name="tap_to_start">Нажмите «Играть» и управляйте кораблем, наклоняя устройство</string>
+    <string name="score_label">Очки: %1$d</string>
+    <string name="distance_label">Дистанция: %1$d м</string>
+    <string name="speed_label">Скорость: %1$d км/ч</string>
+    <string name="score_label_placeholder">Очки: 0</string>
+    <string name="distance_label_placeholder">Дистанция: 0 м</string>
+    <string name="speed_label_placeholder">Скорость: 100 км/ч</string>
+    <string name="game_over_message">Игра окончена!\nОчки: %1$d\nДистанция: %2$d м</string>
+</resources>
+
+

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sky Turret</string>
+    <string name="play">Играть</string>
+    <string name="play_again">Играть снова</string>
+    <string name="tap_to_start">Нажмите «Играть», ведите турель и сбивайте врагов</string>
+    <string name="score_label">Счёт: %1$d</string>
+    <string name="lives_label">Жизни: %1$d</string>
+    <string name="level_label">Уровень: %1$d</string>
+    <string name="combo_label">Комбо x%1$d!</string>
+    <string name="score_label_placeholder">Счёт: 0</string>
+    <string name="lives_label_placeholder">Жизни: 3</string>
+    <string name="level_label_placeholder">Уровень: 1</string>
+    <string name="combo_label_placeholder">Комбо x1!</string>
+    <string name="game_over_message">Игра окончена!\nВаш счёт: %1$d</string>
+</resources>
+

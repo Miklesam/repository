@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">2048</string>
+    <string name="score">Счёт: %1$d</string>
+    <string name="best_score">Лучший: %1$d</string>
+    <string name="reset">Новая игра</string>
+    <string name="you_won">Победа!</string>
+    <string name="win_message">Вы достигли 2048!</string>
+    <string name="continue_game">Продолжить</string>
+    <string name="new_game">Новая игра</string>
+    <string name="game_over">Игра окончена</string>
+    <string name="game_over_message">Нет доступных ходов</string>
+    <string name="try_again">Попробовать снова</string>
+    <string name="reset_game">Сбросить игру</string>
+    <string name="reset_message">Вы уверены, что хотите начать новую игру?</string>
+    <string name="cancel">Отмена</string>
+</resources>
+

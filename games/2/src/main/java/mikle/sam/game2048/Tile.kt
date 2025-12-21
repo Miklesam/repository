@@ -13,6 +13,8 @@ class Tile(
     var targetY: Int = y
     var currentX: Float = x.toFloat()
     var currentY: Float = y.toFloat()
+    private var startX: Float = x.toFloat()
+    private var startY: Float = y.toFloat()
     var mergedFrom: List<Tile>? = null
     var isAnimating = false
     var animationProgress = 0f
@@ -21,6 +23,8 @@ class Tile(
     var isMerged = false
     
     fun savePosition() {
+        startX = currentX
+        startY = currentY
         targetX = x
         targetY = y
     }
@@ -35,13 +39,21 @@ class Tile(
     fun updateAnimation(deltaTime: Float): Boolean {
         if (!isAnimating) return false
         
-        animationProgress += deltaTime * 4f // Animation speed
+        animationProgress += deltaTime * 6f // Animation speed (faster for smoother feel)
         if (animationProgress > 1f) {
             animationProgress = 1f
             isAnimating = false
             isNew = false
             isMerged = false
             scale = 1f
+            // Ensure final position is exact
+            currentX = targetX.toFloat()
+            currentY = targetY.toFloat()
+        } else {
+            // Interpolate position for movement animation
+            val easedProgress = easeOutCubic(animationProgress)
+            currentX = lerp(startX, targetX.toFloat(), easedProgress)
+            currentY = lerp(startY, targetY.toFloat(), easedProgress)
         }
         
         // Scale animation for new/merged tiles
@@ -58,19 +70,35 @@ class Tile(
         return true
     }
     
+    private fun lerp(start: Float, end: Float, t: Float): Float {
+        return start + (end - start) * t
+    }
+    
+    private fun easeOutCubic(t: Float): Float {
+        val t1 = t - 1f
+        return t1 * t1 * t1 + 1f
+    }
+    
     private fun easeOut(t: Float): Float {
         return 1f - (1f - t) * (1f - t)
     }
     
     fun startMoveAnimation(newX: Int, newY: Int) {
-        // For now, just update position immediately
-        // We can add movement animations later if needed
-        x = newX
-        y = newY
-        currentX = newX.toFloat()
-        currentY = newY.toFloat()
+        // Save current position as starting point
+        startX = currentX
+        startY = currentY
+        
+        // Set target position
         targetX = newX
         targetY = newY
+        
+        // Start animation
+        isAnimating = true
+        animationProgress = 0f
+        
+        // Update actual position immediately (for game logic)
+        x = newX
+        y = newY
     }
     
     fun startNewTileAnimation() {

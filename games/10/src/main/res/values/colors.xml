@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#1A1A2E</color>
+    <color name="primary">#FF6B35</color>
+    <color name="primaryVariant">#C73E1D</color>
+    <color name="secondary">#F7931E</color>
+    <color name="secondaryVariant">#FFD700</color>
+    <color name="surface">#2D2D44</color>
+    <color name="onPrimary">#FFFFFF</color>
+    <color name="onSecondary">#000000</color>
+    <color name="onBackground">#FFFFFF</color>
+    <color name="onSurface">#FFFFFF</color>
+    <color name="basketball">#FF8C00</color>
+    <color name="hoop">#4169E1</color>
+    <color name="net">#C0C0C0</color>
+    <color name="backboard">#FFFFFF</color>
+</resources>
+
+

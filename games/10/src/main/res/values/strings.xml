@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Basketball Shooter</string>
+    <string name="play">Играть</string>
+    <string name="play_again">Играть снова</string>
+    <string name="tap_to_start">Нажмите «Играть» и натягивайте мяч для броска</string>
+    <string name="score_label">Очки: %1$d</string>
+    <string name="shots_label">Попадания: %1$d/%2$d</string>
+    <string name="time_label">Время: %1$d сек</string>
+    <string name="score_label_placeholder">Очки: 0</string>
+    <string name="shots_label_placeholder">Попадания: 0/0</string>
+    <string name="time_label_placeholder">Время: 60 сек</string>
+    <string name="game_over_message">Игра окончена!\nОчки: %1$d\nПопадания: %2$d/%3$d</string>
+</resources>
+
+
