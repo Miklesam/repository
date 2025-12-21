@@ -7,6 +7,10 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -71,6 +75,7 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private var pauseStartTime = 0L
     private var lastSpawnEmptyLanes = setOf<Int>()
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("GamePrefs", Context.MODE_PRIVATE)
+    private var vibrator: Vibrator? = null
 
 
     init {
@@ -82,6 +87,15 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             gameOverPaint.typeface = typeface
             pausePaint.typeface = typeface
             bestScorePaint.typeface = typeface
+            
+            // Initialize vibrator
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                vibrator = vibratorManager.defaultVibrator
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            }
         }
     }
 
@@ -194,6 +208,8 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                     bestScore = score
                     sharedPreferences.edit().putInt("bestScore", bestScore).apply()
                 }
+                // Vibrate on collision
+                vibrateOnCollision()
                 postInvalidate()
                 pause()
             }
@@ -416,6 +432,20 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             2 -> listOf(w * 0.33f, w * 0.66f)
             3 -> listOf(w * 0.25f, w * 0.5f, w * 0.75f)
             else -> (0 until count).map { i -> (i + 0.5f) * w / count }
+        }
+    }
+    
+    private fun vibrateOnCollision() {
+        vibrator?.let { vib ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // Use VibrationEffect for API 26+
+                val vibrationEffect = VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE)
+                vib.vibrate(vibrationEffect)
+            } else {
+                // Fallback for older versions
+                @Suppress("DEPRECATION")
+                vib.vibrate(100)
+            }
         }
     }
 }
