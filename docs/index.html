@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои Игры - Android Games Collection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .game-card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .game-card .game-id {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin-bottom: 15px;
+        }
+
+        .game-card .description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .game-card .features {
+            margin-top: 15px;
+        }
+
+        .game-card .features h3 {
+            font-size: 1em;
+            color: #764ba2;
+            margin-bottom: 10px;
+        }
+
+        .game-card .features ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .game-card .features li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+            color: #555;
+        }
+
+        .game-card .features li:before {
+            content: "🎮";
+            position: absolute;
+            left: 0;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            background: #f0f0f0;
+            color: #667eea;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            margin: 5px 5px 5px 0;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            padding: 40px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 Коллекция Игр</h1>
+            <p>Android игры, написанные на Kotlin</p>
+        </header>
+
+        <div id="games-container" class="games-grid">
+            <div class="loading">Загрузка информации об играх...</div>
+        </div>
+
+        <footer>
+            <p>Создано с ❤️ используя Kotlin и Android SDK</p>
+            <p><a href="#" id="repo-link" target="_blank">GitHub Repository</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // Данные об играх (можно расширить, добавив парсинг README файлов)
+        const games = [
+            {
+                id: 0,
+                name: "Lane Runner",
+                description: "Казуальная аркада. Игрок управляет персонажем, который движется снизу вверх по полосам, избегая столкновений с препятствиями.",
+                features: [
+                    "Динамические полосы (3-7)",
+                    "Разнообразие препятствий (6 типов)",
+                    "Система управления скоростью",
+                    "Фоновая музыка и звуки",
+                    "Программная отрисовка"
+                ],
+                tech: ["Kotlin", "Canvas API", "SoundPool", "MediaPlayer"]
+            },
+            {
+                id: 1,
+                name: "Flappy Bird",
+                description: "Клон классической игры Flappy Bird. Управляйте птицей, избегая препятствий.",
+                features: [
+                    "Реалистичная физика",
+                    "Система очков",
+                    "Сохранение лучшего результата",
+                    "Простое управление"
+                ],
+                tech: ["Kotlin", "Canvas API"]
+            },
+            {
+                id: 2,
+                name: "2048",
+                description: "Классическая головоломка 2048. Скользите пронумерованными плитками, чтобы объединить их и достичь 2048.",
+                features: [
+                    "Классический геймплей 2048",
+                    "Управление свайпами",
+                    "Отслеживание очков",
+                    "Красивый UI с анимациями"
+                ],
+                tech: ["Kotlin", "Canvas API", "SharedPreferences"]
+            },
+            {
+                id: 3,
+                name: "Match 3",
+                description: "Классическая головоломка Match 3. Создавайте линии из 3+ драгоценных камней одного цвета.",
+                features: [
+                    "Игровое поле 8x8",
+                    "6 типов драгоценных камней",
+                    "Цепные реакции",
+                    "Ограниченное количество ходов (30)"
+                ],
+                tech: ["Kotlin", "GridLayout"]
+            },
+            {
+                id: 4,
+                name: "Sky Turret",
+                description: "Казуальная аркада. Управляйте турелью и стреляйте по врагам, спускающимся сверху.",
+                features: [
+                    "Прогрессия сложности",
+                    "Система комбо (до x5)",
+                    "Разные типы врагов",
+                    "Визуальные эффекты взрывов"
+                ],
+                tech: ["Kotlin", "Canvas API"]
+            },
+            {
+                id: 5,
+                name: "Tower Defense",
+                description: "Классическая игра типа tower defense. Защищайте базу от волн врагов, размещая башни вдоль пути.",
+                features: [
+                    "Система пути для врагов",
+                    "3 типа башен",
+                    "3 типа врагов",
+                    "Система волн",
+                    "Экономика и жизни"
+                ],
+                tech: ["Kotlin", "Canvas API"]
+            },
+            {
+                id: 6,
+                name: "Game 6",
+                description: "Описание игры будет добавлено позже.",
+                features: [],
+                tech: ["Kotlin"]
+            },
+            {
+                id: 7,
+                name: "Game 7",
+                description: "Описание игры будет добавлено позже.",
+                features: [],
+                tech: ["Kotlin"]
+            },
+            {
+                id: 8,
+                name: "Game 8",
+                description: "Описание игры будет добавлено позже.",
+                features: [],
+                tech: ["Kotlin"]
+            },
+            {
+                id: 9,
+                name: "Game 9",
+                description: "Описание игры будет добавлено позже.",
+                features: [],
+                tech: ["Kotlin"]
+            },
+            {
+                id: 10,
+                name: "Game 10",
+                description: "Описание игры будет добавлено позже.",
+                features: [],
+                tech: ["Kotlin"]
+            }
+        ];
+
+        function renderGames() {
+            const container = document.getElementById('games-container');
+            container.innerHTML = '';
+
+            games.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                
+                const featuresHTML = game.features.length > 0 
+                    ? `<div class="features">
+                        <h3>Особенности:</h3>
+                        <ul>
+                            ${game.features.map(f => `<li>${f}</li>`).join('')}
+                        </ul>
+                    </div>`
+                    : '';
+
+                const techHTML = game.tech.map(t => `<span class="tech-badge">${t}</span>`).join('');
+
+                card.innerHTML = `
+                    <span class="game-id">Game ${game.id}</span>
+                    <h2>${game.name}</h2>
+                    <p class="description">${game.description}</p>
+                    ${featuresHTML}
+                    <div style="margin-top: 15px;">
+                        ${techHTML}
+                    </div>
+                `;
+
+                card.addEventListener('click', () => {
+                    // Открываем README игры в репозитории
+                    window.open(`https://github.com/${getRepoPath()}/tree/main/games/${game.id}`, '_blank');
+                });
+
+                container.appendChild(card);
+            });
+        }
+
+        // Получаем путь к репозиторию автоматически
+        function getRepoPath() {
+            // Пытаемся определить из URL, иначе используем дефолтный путь
+            const hostname = window.location.hostname;
+            if (hostname.includes('github.io')) {
+                const path = window.location.pathname.split('/');
+                if (path.length >= 2) {
+                    return path[1] + '/repository';
+                }
+            }
+            // Дефолтный путь (замените на ваш username)
+            return 'yourusername/repository';
+        }
+
+        // Устанавливаем ссылку на репозиторий
+        function setupRepoLink() {
+            const repoLink = document.getElementById('repo-link');
+            repoLink.href = `https://github.com/${getRepoPath()}`;
+        }
+
+        // Загружаем игры при загрузке страницы
+        window.addEventListener('DOMContentLoaded', () => {
+            renderGames();
+            setupRepoLink();
+        });
+    </script>
+</body>
+</html>
+

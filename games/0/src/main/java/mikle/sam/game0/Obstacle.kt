@@ -9,10 +9,15 @@ import kotlin.math.PI
 import kotlin.math.sin
 
 enum class ObstacleType {
-    SQUARE, CIRCLE
+    NORMAL,      // Обычное препятствие
+    FAST,        // Быстрое препятствие
+    SLOW,        // Медленное препятствие (больше очков)
+    BIG,         // Большое препятствие
+    SMALL,       // Маленькое препятствие
+    LANE_CHANGER // Меняет полосы
 }
 
-class Obstacle(x: Float, y: Float, val type: ObstacleType, speedBoost: Float = 0f) {
+class Obstacle(x: Float, y: Float, val type: ObstacleType, speedBoost: Float = 0f, lanePositions: List<Float>? = null) {
     val rect: RectF
     private val bodyPaint = Paint().apply {
         color = Color.BLACK
@@ -23,26 +28,70 @@ class Obstacle(x: Float, y: Float, val type: ObstacleType, speedBoost: Float = 0
         color = Color.BLACK
         isAntiAlias = true
         style = Paint.Style.STROKE
-        strokeWidth = 20f
         strokeCap = Paint.Cap.ROUND
     }
+    private val hairPaint = Paint().apply {
+        color = Color.BLACK
+        isAntiAlias = true
+        style = Paint.Style.STROKE
+    }
+    private val indicatorPaint = Paint().apply {
+        color = Color.BLACK
+        isAntiAlias = true
+        style = Paint.Style.STROKE
+    }
+    private val arrowPaint = Paint().apply {
+        color = Color.BLACK
+        isAntiAlias = true
+        style = Paint.Style.STROKE
+    }
+    private val bodyPath = Path()
     private var lastAnimationUpdate = 0L
     private var walkAnimationPhase = 0f
     private var speed: Float
     private val originalSpeed: Float
+    private val sizeMultiplier: Float
+    private var lanePositions: List<Float>? = lanePositions
+    private var currentLaneIndex: Int = 0
+    private var lastLaneChangeTime = 0L
+    private val laneChangeInterval = 2000L // Меняет полосу каждые 2 секунды
 
     init {
-        rect = RectF(x - 100f, y - 100f, x + 100f, y + 100f)
-        when (type) {
-            ObstacleType.SQUARE -> {
-                speed = (80..85).random().toFloat()/10 + speedBoost
-            }
-            ObstacleType.CIRCLE -> {
-                speed = (10..11).random().toFloat()
-            }
+        // Определяем размер в зависимости от типа
+        sizeMultiplier = when (type) {
+            ObstacleType.BIG -> 1.5f
+            ObstacleType.SMALL -> 0.7f
+            else -> 1.0f
         }
+        
+        val baseSize = 100f * sizeMultiplier
+        rect = RectF(x - baseSize, y - baseSize, x + baseSize, y + baseSize)
+        
+        // Определяем скорость в зависимости от типа
+        val baseSpeed = when (type) {
+            ObstacleType.FAST -> (12..14).random().toFloat()
+            ObstacleType.SLOW -> (6..8).random().toFloat()
+            ObstacleType.BIG -> (7..9).random().toFloat()
+            ObstacleType.SMALL -> (10..12).random().toFloat()
+            ObstacleType.LANE_CHANGER -> (8..10).random().toFloat()
+            ObstacleType.NORMAL -> (8..8).random().toFloat()
+        }
+        
+        speed = baseSpeed + speedBoost
         originalSpeed = speed
         lastAnimationUpdate = System.currentTimeMillis()
+        lastLaneChangeTime = System.currentTimeMillis()
+        
+        // Обновляем strokeWidth для Paint объектов в зависимости от размера
+        limbPaint.strokeWidth = 20f * sizeMultiplier
+        hairPaint.strokeWidth = 3f * sizeMultiplier
+        
+        // Находим начальную полосу для LANE_CHANGER
+        if (type == ObstacleType.LANE_CHANGER && lanePositions != null) {
+            currentLaneIndex = lanePositions.indexOfFirst { 
+                kotlin.math.abs(it - x) < 10f 
+            }.takeIf { it >= 0 } ?: 0
+        }
     }
 
     fun update() {
@@ -54,6 +103,39 @@ class Obstacle(x: Float, y: Float, val type: ObstacleType, speedBoost: Float = 0
         if (currentTime - lastAnimationUpdate > 70) {
             walkAnimationPhase = (walkAnimationPhase + 0.45f) % (PI * 2f).toFloat()
             lastAnimationUpdate = currentTime
+        }
+        
+        // Логика смены полос для LANE_CHANGER
+        if (type == ObstacleType.LANE_CHANGER && lanePositions != null && lanePositions!!.size > 1) {
+            if (currentTime - lastLaneChangeTime > laneChangeInterval) {
+                // Меняем полосу случайным образом
+                val newLane = (0 until lanePositions!!.size).random()
+                if (newLane != currentLaneIndex) {
+                    currentLaneIndex = newLane
+                    val newX = lanePositions!![currentLaneIndex]
+                    val centerX = rect.centerX()
+                    val width = rect.width()
+                    rect.left = newX - width / 2
+                    rect.right = newX + width / 2
+                    lastLaneChangeTime = currentTime
+                }
+            }
+        }
+    }
+    
+    fun updateLanePositions(newLanePositions: List<Float>) {
+        if (type == ObstacleType.LANE_CHANGER) {
+            lanePositions = newLanePositions
+            // Если количество полос изменилось, выбираем ближайшую полосу
+            if (newLanePositions.isNotEmpty()) {
+                if (currentLaneIndex >= newLanePositions.size) {
+                    currentLaneIndex = newLanePositions.size - 1
+                }
+                val newX = newLanePositions[currentLaneIndex]
+                val width = rect.width()
+                rect.left = newX - width / 2
+                rect.right = newX + width / 2
+            }
         }
     }
 
@@ -90,12 +172,6 @@ class Obstacle(x: Float, y: Float, val type: ObstacleType, speedBoost: Float = 0
         canvas.drawCircle(centerX, headY, headRadius, bodyPaint)
         
         // Add hair detail (view from behind)
-        val hairPaint = Paint().apply {
-            color = Color.BLACK
-            isAntiAlias = true
-            style = Paint.Style.STROKE
-            strokeWidth = 3f
-        }
         // Draw hair lines
         canvas.drawArc(
             centerX - headRadius * 0.8f,
@@ -105,19 +181,48 @@ class Obstacle(x: Float, y: Float, val type: ObstacleType, speedBoost: Float = 0
             0f, 180f, false, hairPaint
         )
         
+        // Визуальные индикаторы для разных типов препятствий
+        when (type) {
+            ObstacleType.FAST -> {
+                // Маленькие линии по бокам для быстрых
+                indicatorPaint.strokeWidth = 2f * sizeMultiplier
+                canvas.drawLine(centerX - width * 0.4f, headY, centerX - width * 0.3f, headY, indicatorPaint)
+                canvas.drawLine(centerX + width * 0.3f, headY, centerX + width * 0.4f, headY, indicatorPaint)
+            }
+            ObstacleType.SLOW -> {
+                // Горизонтальная линия для медленных
+                indicatorPaint.strokeWidth = 3f * sizeMultiplier
+                canvas.drawLine(centerX - width * 0.2f, headY - headRadius * 0.5f, 
+                               centerX + width * 0.2f, headY - headRadius * 0.5f, indicatorPaint)
+            }
+            ObstacleType.LANE_CHANGER -> {
+                // Стрелки по бокам для меняющих полосы
+                arrowPaint.strokeWidth = 2f * sizeMultiplier
+                val arrowSize = width * 0.15f
+                // Левая стрелка
+                canvas.drawLine(centerX - width * 0.35f, headY, centerX - width * 0.45f, headY - arrowSize, arrowPaint)
+                canvas.drawLine(centerX - width * 0.35f, headY, centerX - width * 0.45f, headY + arrowSize, arrowPaint)
+                // Правая стрелка
+                canvas.drawLine(centerX + width * 0.35f, headY, centerX + width * 0.45f, headY - arrowSize, arrowPaint)
+                canvas.drawLine(centerX + width * 0.35f, headY, centerX + width * 0.45f, headY + arrowSize, arrowPaint)
+            }
+            else -> {
+                // Для остальных типов без дополнительных индикаторов
+            }
+        }
+        
         // Body/back (trapezoid shape - wider at shoulders, narrower at waist)
         val bodyTop = headY + headRadius + 5f
         val bodyBottom = bodyTop + height * 0.4f
         val shoulderWidth = width * 0.5f
         val waistWidth = width * 0.35f
         
-        val bodyPath = Path().apply {
-            moveTo(centerX - shoulderWidth / 2, bodyTop)
-            lineTo(centerX + shoulderWidth / 2, bodyTop)
-            lineTo(centerX + waistWidth / 2, bodyBottom)
-            lineTo(centerX - waistWidth / 2, bodyBottom)
-            close()
-        }
+        bodyPath.reset()
+        bodyPath.moveTo(centerX - shoulderWidth / 2, bodyTop)
+        bodyPath.lineTo(centerX + shoulderWidth / 2, bodyTop)
+        bodyPath.lineTo(centerX + waistWidth / 2, bodyBottom)
+        bodyPath.lineTo(centerX - waistWidth / 2, bodyBottom)
+        bodyPath.close()
         canvas.drawPath(bodyPath, bodyPaint)
         
         // Shoulder positions (at top of body)

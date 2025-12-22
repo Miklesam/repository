@@ -17,6 +17,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.math.abs
 
 class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
@@ -207,15 +208,21 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private fun update() {
         // Game logic will go here
         frameCount++
-        val currentSpawnFrequency = if (slowdownActive) spawnFrequency * 4 else spawnFrequency
-        if (frameCount % currentSpawnFrequency == 0 && !isSpawningPaused && !isAnimatingLaneChange) {
+        // Не спавним новые препятствия во время замедления, чтобы они не наслаивались
+        if (!slowdownActive && frameCount % spawnFrequency == 0 && !isSpawningPaused && !isAnimatingLaneChange) {
             spawnObstacle()
         }
 
         if (::player.isInitialized) {
             player.update()
         }
-        obstacles.forEach { it.update() }
+        obstacles.forEach { 
+            it.update()
+            // Обновляем позиции полос для препятствий, которые меняют полосы
+            if (it.type == ObstacleType.LANE_CHANGER) {
+                it.updateLanePositions(lanePositions)
+            }
+        }
         obstacles.removeAll { it.rect.top > height }
         checkCollisions()
 
@@ -283,6 +290,72 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         }
     }
 
+    private fun getUnlockedObstacleTypes(): List<ObstacleType> {
+        // Постепенная разблокировка типов препятствий на основе очков
+        val unlocked = mutableListOf(ObstacleType.NORMAL) // Всегда доступны обычные
+        
+        // Используем if для накопления - каждый тип разблокируется и остается доступным
+        if (score >= 5) unlocked.add(ObstacleType.FAST)      // После 5 очков
+        if (score >= 10) unlocked.add(ObstacleType.SLOW)      // После 10 очков
+        if (score >= 15) unlocked.add(ObstacleType.SMALL)     // После 15 очков
+        if (score >= 20) unlocked.add(ObstacleType.BIG)       // После 20 очков
+        if (score >= 25) unlocked.add(ObstacleType.LANE_CHANGER) // После 25 очков
+        
+        return unlocked
+    }
+    
+    private fun selectRandomObstacleType(): ObstacleType {
+        val unlockedTypes = getUnlockedObstacleTypes()
+        
+        // Если разблокирован только NORMAL, возвращаем его
+        if (unlockedTypes.size == 1) {
+            return ObstacleType.NORMAL
+        }
+        
+        // Вероятности появления разных типов препятствий (только разблокированных)
+        val rand = (1..100).random()
+        val normalWeight = 40
+        val fastWeight = 20
+        val slowWeight = 15
+        val smallWeight = 10
+        val bigWeight = 7
+        val laneChangerWeight = 8
+        
+        var currentWeight = 0
+        val totalWeight = unlockedTypes.sumOf { type ->
+            when (type) {
+                ObstacleType.NORMAL -> normalWeight
+                ObstacleType.FAST -> fastWeight
+                ObstacleType.SLOW -> slowWeight
+                ObstacleType.SMALL -> smallWeight
+                ObstacleType.BIG -> bigWeight
+                ObstacleType.LANE_CHANGER -> laneChangerWeight
+            }
+        }
+        
+        // Нормализуем веса относительно доступных типов
+        val normalizedRand = (rand * totalWeight) / 100
+        
+        currentWeight = 0
+        for (type in unlockedTypes) {
+            val typeWeight = when (type) {
+                ObstacleType.NORMAL -> normalWeight
+                ObstacleType.FAST -> fastWeight
+                ObstacleType.SLOW -> slowWeight
+                ObstacleType.SMALL -> smallWeight
+                ObstacleType.BIG -> bigWeight
+                ObstacleType.LANE_CHANGER -> laneChangerWeight
+            }
+            currentWeight += typeWeight
+            if (normalizedRand <= currentWeight) {
+                return type
+            }
+        }
+        
+        // Fallback на первый доступный тип
+        return unlockedTypes.first()
+    }
+    
     private fun spawnObstacle() {
         val lanesToSpawnIn = lastSpawnEmptyLanes.toMutableSet()
         val minObstacles = lastSpawnEmptyLanes.size.coerceAtLeast(1)
@@ -300,11 +373,24 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             lanesToSpawnIn.addAll(availableForRandom.shuffled().take(remainingNeeded))
         }
 
+        // Определяем, будет ли одно специальное препятствие (не NORMAL)
+        val hasSpecialObstacle = lanesToSpawnIn.size > 1 && (0..100).random() < 30 // 30% вероятность специального препятствия
+        var specialObstacleSpawned = false
+        
         lanesToSpawnIn.forEach { lane ->
             if (lane < lanePositions.size) {
             val x = lanePositions[lane]
-            val type = ObstacleType.SQUARE
-            val obstacle = Obstacle(x, 0f, type, speedBoost)
+            // Выбираем тип препятствия
+            val type = if (hasSpecialObstacle && !specialObstacleSpawned) {
+                // Первое препятствие может быть специальным
+                specialObstacleSpawned = true
+                selectRandomObstacleType()
+            } else {
+                // Остальные всегда NORMAL
+                ObstacleType.NORMAL
+            }
+            val obstacle = Obstacle(x, 0f, type, speedBoost, 
+                if (type == ObstacleType.LANE_CHANGER) lanePositions else null)
 
             if (slowdownActive) {
                 obstacle.slowDown()
@@ -333,23 +419,51 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             val newLanePos = calculateLanePositions(width, M)
             val oldLanePos = calculateLanePositions(width, N)
             val interpolatedLanePos = newLanePos.map { newPos ->
-                val closestOldPos = oldLanePos.minByOrNull { Math.abs(it - newPos) } ?: (width / 2f)
+                // Оптимизация: используем простой поиск ближайшего вместо minByOrNull
+                var closestOldPos = oldLanePos[0]
+                var minDist = abs(oldLanePos[0] - newPos)
+                for (i in 1 until oldLanePos.size) {
+                    val dist = abs(oldLanePos[i] - newPos)
+                    if (dist < minDist) {
+                        minDist = dist
+                        closestOldPos = oldLanePos[i]
+                    }
+                }
                 closestOldPos + (newPos - closestOldPos) * progress
             }
             player.updateLanePositions(interpolatedLanePos)
 
-            val oldLines = (0 until N - 1).map { j ->
-                val p1 = calculateLanePositions(width, N)[j]
-                val p2 = calculateLanePositions(width, N)[j+1]
-                p1 + (p2 - p1) / 2
+            // Кэшируем вычисления линий
+            val oldLines = if (N > 1) {
+                (0 until N - 1).map { j ->
+                    (oldLanePos[j] + oldLanePos[j + 1]) / 2
+                }
+            } else {
+                emptyList()
             }
-            val newLines = (0 until M - 1).map { j ->
-                val p1 = calculateLanePositions(width, M)[j]
-                val p2 = calculateLanePositions(width, M)[j+1]
-                p1 + (p2 - p1) / 2
+            val newLines = if (M > 1) {
+                (0 until M - 1).map { j ->
+                    (newLanePos[j] + newLanePos[j + 1]) / 2
+                }
+            } else {
+                emptyList()
             }
-            newLines.forEach { newLine ->
-                val closestOldLine = oldLines.minByOrNull { Math.abs(it - newLine) } ?: (width / 2f)
+            newLines.forEachIndexed { index, newLine ->
+                // Оптимизация: используем простой поиск ближайшего
+                val closestOldLine = if (oldLines.isNotEmpty()) {
+                    var closest = oldLines[0]
+                    var minDist = abs(oldLines[0] - newLine)
+                    for (i in 1 until oldLines.size) {
+                        val dist = abs(oldLines[i] - newLine)
+                        if (dist < minDist) {
+                            minDist = dist
+                            closest = oldLines[i]
+                        }
+                    }
+                    closest
+                } else {
+                    width / 2f
+                }
                 val currentPos = closestOldLine + (newLine - closestOldLine) * progress
                 canvas.drawLine(currentPos, 0f, currentPos, height.toFloat(), lanePaint)
             }
@@ -358,6 +472,12 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 isAnimatingLaneChange = false
                 updateLanePositions(width)
                 player.updateLanePositions(lanePositions)
+                // Обновляем позиции полос для всех препятствий, которые меняют полосы
+                obstacles.forEach { obstacle ->
+                    if (obstacle.type == ObstacleType.LANE_CHANGER) {
+                        obstacle.updateLanePositions(lanePositions)
+                    }
+                }
                 lastSpawnEmptyLanes = setOf() // Reset for new lane count
                 isSpawningPaused = false
             }
@@ -454,7 +574,7 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                     val endY = event.y
                     val deltaX = endX - startX
                     val deltaY = endY - startY
-                    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                    if (abs(deltaX) > abs(deltaY)) {
                         if (deltaX > 100) {
                             player.moveRight()
                         } else if (deltaX < -100) {

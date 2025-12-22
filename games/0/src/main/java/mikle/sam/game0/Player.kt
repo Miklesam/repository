@@ -24,6 +24,13 @@ class Player(private val screenHeight: Int, private var lanePositions: List<Floa
         strokeWidth = 20f
         strokeCap = Paint.Cap.ROUND
     }
+    private val hairPaint = Paint().apply {
+        color = Color.BLACK
+        isAntiAlias = true
+        style = Paint.Style.STROKE
+        strokeWidth = 3f
+    }
+    private val bodyPath = Path()
     private var walkAnimationPhase = 0f
     private var lastAnimationUpdate = System.currentTimeMillis()
 
@@ -87,12 +94,6 @@ class Player(private val screenHeight: Int, private var lanePositions: List<Floa
         canvas.drawCircle(centerX, headY, headRadius, bodyPaint)
         
         // Add hair detail (view from behind)
-        val hairPaint = Paint().apply {
-            color = Color.BLACK
-            isAntiAlias = true
-            style = Paint.Style.STROKE
-            strokeWidth = 3f
-        }
         // Draw hair lines
         canvas.drawArc(
             centerX - headRadius * 0.8f,
@@ -108,13 +109,12 @@ class Player(private val screenHeight: Int, private var lanePositions: List<Floa
         val shoulderWidth = width * 0.5f
         val waistWidth = width * 0.35f
         
-        val bodyPath = Path().apply {
-            moveTo(centerX - shoulderWidth / 2, bodyTop)
-            lineTo(centerX + shoulderWidth / 2, bodyTop)
-            lineTo(centerX + waistWidth / 2, bodyBottom)
-            lineTo(centerX - waistWidth / 2, bodyBottom)
-            close()
-        }
+        bodyPath.reset()
+        bodyPath.moveTo(centerX - shoulderWidth / 2, bodyTop)
+        bodyPath.lineTo(centerX + shoulderWidth / 2, bodyTop)
+        bodyPath.lineTo(centerX + waistWidth / 2, bodyBottom)
+        bodyPath.lineTo(centerX - waistWidth / 2, bodyBottom)
+        bodyPath.close()
         canvas.drawPath(bodyPath, bodyPaint)
         
         // Shoulder positions (at top of body)
