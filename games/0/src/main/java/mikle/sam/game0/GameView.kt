@@ -7,6 +7,8 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
+import android.media.AudioAttributes
+import android.media.SoundPool
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -17,6 +19,25 @@ import android.view.View
 import java.util.concurrent.CopyOnWriteArrayList
 
 class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
+
+    interface MusicController {
+        fun pauseMusic()
+        fun resumeMusic()
+    }
+    
+    private var musicController: MusicController? = null
+    
+    fun setMusicController(controller: MusicController) {
+        musicController = controller
+    }
+    
+    fun isGamePaused(): Boolean {
+        return isPaused
+    }
+    
+    fun isGameOver(): Boolean {
+        return gameOver
+    }
 
     private var startX = 0f
     private var startY = 0f
@@ -76,6 +97,9 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private var lastSpawnEmptyLanes = setOf<Int>()
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("GamePrefs", Context.MODE_PRIVATE)
     private var vibrator: Vibrator? = null
+    private var soundPool: SoundPool? = null
+    private var collisionSoundId: Int = 0
+    private var isSoundLoaded = false
 
 
     init {
@@ -96,6 +120,45 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 @Suppress("DEPRECATION")
                 vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
             }
+            
+            // Initialize sound pool for collision sound
+            initializeSoundPool()
+        }
+    }
+    
+    private fun initializeSoundPool() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                val audioAttributes = AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_GAME)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build()
+                soundPool = SoundPool.Builder()
+                    .setMaxStreams(1)
+                    .setAudioAttributes(audioAttributes)
+                    .build()
+            } else {
+                @Suppress("DEPRECATION")
+                soundPool = SoundPool(1, android.media.AudioManager.STREAM_MUSIC, 0)
+            }
+            
+            // Set up load complete listener to know when sound is ready
+            soundPool?.setOnLoadCompleteListener { _, sampleId, status ->
+                if (status == 0 && sampleId == collisionSoundId) {
+                    isSoundLoaded = true
+                }
+            }
+            
+            // Load collision sound
+            // Place your sound file (e.g., collision_sound.ogg) in res/raw/ folder
+            // and name it collision_sound (lowercase, no spaces, no special chars except underscore)
+            val soundResourceId = resources.getIdentifier("collision_sound", "raw", context.packageName)
+            if (soundResourceId != 0) {
+                collisionSoundId = soundPool?.load(context, soundResourceId, 1) ?: 0
+            }
+        } catch (e: Exception) {
+            // Sound file not found or error loading - continue without sound
+            e.printStackTrace()
         }
     }
 
@@ -210,6 +273,10 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 }
                 // Vibrate on collision
                 vibrateOnCollision()
+                // Play collision sound
+                playCollisionSound()
+                // Pause music on collision
+                musicController?.pauseMusic()
                 postInvalidate()
                 pause()
             }
@@ -342,6 +409,7 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             lastLaneAddTime = 0L
         }
         player.reset()
+        musicController?.resumeMusic()
         resume()
     }
 
@@ -357,6 +425,7 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                         if (isPaused) {
                             // Game is being paused
                             pauseStartTime = System.currentTimeMillis()
+                            musicController?.pauseMusic()
                         } else {
                             // Game is being resumed
                             val pauseDuration = System.currentTimeMillis() - pauseStartTime
@@ -371,6 +440,7 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                             if (isAnimatingLaneChange) {
                                 laneChangeStartTs += pauseDuration
                             }
+                            musicController?.resumeMusic()
                         }
                     } else {
                         startX = event.x
@@ -446,6 +516,30 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 @Suppress("DEPRECATION")
                 vib.vibrate(100)
             }
+        }
+    }
+    
+    private fun playCollisionSound() {
+        try {
+            soundPool?.let { pool ->
+                if (collisionSoundId != 0) {
+                    // Play sound at lower volume (0.4 = 40% volume)
+                    pool.play(collisionSoundId, 0.4f, 0.4f, 1, 0, 1f)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+    
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        // Release sound pool resources
+        try {
+            soundPool?.release()
+            soundPool = null
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }
