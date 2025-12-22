@@ -63,10 +63,10 @@ class Obstacle(x: Float, y: Float, val type: ObstacleType, speedBoost: Float = 0
             ObstacleType.SMALL -> 0.7f
             else -> 1.0f
         }
-        
+
         val baseSize = 100f * sizeMultiplier
         rect = RectF(x - baseSize, y - baseSize, x + baseSize, y + baseSize)
-        
+
         // Определяем скорость в зависимости от типа
         val baseSpeed = when (type) {
             ObstacleType.FAST -> (12..14).random().toFloat()
@@ -76,20 +76,20 @@ class Obstacle(x: Float, y: Float, val type: ObstacleType, speedBoost: Float = 0
             ObstacleType.LANE_CHANGER -> (8..10).random().toFloat()
             ObstacleType.NORMAL -> (8..8).random().toFloat()
         }
-        
+
         speed = baseSpeed + speedBoost
         originalSpeed = speed
         lastAnimationUpdate = System.currentTimeMillis()
         lastLaneChangeTime = System.currentTimeMillis()
-        
+
         // Обновляем strokeWidth для Paint объектов в зависимости от размера
         limbPaint.strokeWidth = 20f * sizeMultiplier
         hairPaint.strokeWidth = 3f * sizeMultiplier
-        
+
         // Находим начальную полосу для LANE_CHANGER
         if (type == ObstacleType.LANE_CHANGER && lanePositions != null) {
-            currentLaneIndex = lanePositions.indexOfFirst { 
-                kotlin.math.abs(it - x) < 10f 
+            currentLaneIndex = lanePositions.indexOfFirst {
+                kotlin.math.abs(it - x) < 10f
             }.takeIf { it >= 0 } ?: 0
         }
     }
@@ -104,7 +104,7 @@ class Obstacle(x: Float, y: Float, val type: ObstacleType, speedBoost: Float = 0
             walkAnimationPhase = (walkAnimationPhase + 0.45f) % (PI * 2f).toFloat()
             lastAnimationUpdate = currentTime
         }
-        
+
         // Логика смены полос для LANE_CHANGER
         if (type == ObstacleType.LANE_CHANGER && lanePositions != null && lanePositions!!.size > 1) {
             if (currentTime - lastLaneChangeTime > laneChangeInterval) {
@@ -122,7 +122,7 @@ class Obstacle(x: Float, y: Float, val type: ObstacleType, speedBoost: Float = 0
             }
         }
     }
-    
+
     fun updateLanePositions(newLanePositions: List<Float>) {
         if (type == ObstacleType.LANE_CHANGER) {
             lanePositions = newLanePositions
@@ -192,7 +192,7 @@ class Obstacle(x: Float, y: Float, val type: ObstacleType, speedBoost: Float = 0
             ObstacleType.SLOW -> {
                 // Горизонтальная линия для медленных
                 indicatorPaint.strokeWidth = 3f * sizeMultiplier
-                canvas.drawLine(centerX - width * 0.2f, headY - headRadius * 0.5f, 
+                canvas.drawLine(centerX - width * 0.2f, headY - headRadius * 0.5f,
                                centerX + width * 0.2f, headY - headRadius * 0.5f, indicatorPaint)
             }
             ObstacleType.LANE_CHANGER -> {
@@ -210,7 +210,7 @@ class Obstacle(x: Float, y: Float, val type: ObstacleType, speedBoost: Float = 0
                 // Для остальных типов без дополнительных индикаторов
             }
         }
-        
+
         // Body/back (trapezoid shape - wider at shoulders, narrower at waist)
         val bodyTop = headY + headRadius + 5f
         val bodyBottom = bodyTop + height * 0.4f

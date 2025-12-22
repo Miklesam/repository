@@ -216,7 +216,7 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         if (::player.isInitialized) {
             player.update()
         }
-        obstacles.forEach { 
+        obstacles.forEach {
             it.update()
             // Обновляем позиции полос для препятствий, которые меняют полосы
             if (it.type == ObstacleType.LANE_CHANGER) {
@@ -293,25 +293,25 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private fun getUnlockedObstacleTypes(): List<ObstacleType> {
         // Постепенная разблокировка типов препятствий на основе очков
         val unlocked = mutableListOf(ObstacleType.NORMAL) // Всегда доступны обычные
-        
+
         // Используем if для накопления - каждый тип разблокируется и остается доступным
         if (score >= 5) unlocked.add(ObstacleType.FAST)      // После 5 очков
         if (score >= 10) unlocked.add(ObstacleType.SLOW)      // После 10 очков
         if (score >= 15) unlocked.add(ObstacleType.SMALL)     // После 15 очков
         if (score >= 20) unlocked.add(ObstacleType.BIG)       // После 20 очков
         if (score >= 25) unlocked.add(ObstacleType.LANE_CHANGER) // После 25 очков
-        
+
         return unlocked
     }
-    
+
     private fun selectRandomObstacleType(): ObstacleType {
         val unlockedTypes = getUnlockedObstacleTypes()
-        
+
         // Если разблокирован только NORMAL, возвращаем его
         if (unlockedTypes.size == 1) {
             return ObstacleType.NORMAL
         }
-        
+
         // Вероятности появления разных типов препятствий (только разблокированных)
         val rand = (1..100).random()
         val normalWeight = 40
@@ -320,7 +320,7 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         val smallWeight = 10
         val bigWeight = 7
         val laneChangerWeight = 8
-        
+
         var currentWeight = 0
         val totalWeight = unlockedTypes.sumOf { type ->
             when (type) {
@@ -332,10 +332,10 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 ObstacleType.LANE_CHANGER -> laneChangerWeight
             }
         }
-        
+
         // Нормализуем веса относительно доступных типов
         val normalizedRand = (rand * totalWeight) / 100
-        
+
         currentWeight = 0
         for (type in unlockedTypes) {
             val typeWeight = when (type) {
@@ -351,11 +351,11 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 return type
             }
         }
-        
+
         // Fallback на первый доступный тип
         return unlockedTypes.first()
     }
-    
+
     private fun spawnObstacle() {
         val lanesToSpawnIn = lastSpawnEmptyLanes.toMutableSet()
         val minObstacles = lastSpawnEmptyLanes.size.coerceAtLeast(1)
@@ -372,24 +372,37 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             val availableForRandom = (0 until laneCount).toSet() - lanesToSpawnIn
             lanesToSpawnIn.addAll(availableForRandom.shuffled().take(remainingNeeded))
         }
-
         // Определяем, будет ли одно специальное препятствие (не NORMAL)
         val hasSpecialObstacle = lanesToSpawnIn.size > 1 && (0..100).random() < 30 // 30% вероятность специального препятствия
         var specialObstacleSpawned = false
-        
-        lanesToSpawnIn.forEach { lane ->
+
+        // Проверяем, есть ли разблокированные специальные типы препятствий
+        val unlockedTypes = getUnlockedObstacleTypes()
+        val hasUnlockedSpecialTypes = unlockedTypes.any { it != ObstacleType.NORMAL }
+
+        // Определяем, будет ли одно специальное препятствие в этом спавне
+        // Специальное препятствие может появиться только если:
+        // 1. Есть разблокированные специальные типы (score >= 5)
+        // 2. Спавнится больше одного препятствия
+        // 3. С вероятностью 30%
+        val hasSpecialObstacle = hasUnlockedSpecialTypes && lanesToSpawnIn.size > 1 && (0..100).random() < 30
+        // Выбираем случайную позицию для специального препятствия
+        val specialObstacleIndex = if (hasSpecialObstacle) {
+            (0 until lanesToSpawnIn.size).random()
+        } else {
+            -1 // Нет специального препятствия
+        }
+
+        lanesToSpawnIn.forEachIndexed { index, lane ->
             if (lane < lanePositions.size) {
             val x = lanePositions[lane]
-            // Выбираем тип препятствия
-            val type = if (hasSpecialObstacle && !specialObstacleSpawned) {
-                // Первое препятствие может быть специальным
-                specialObstacleSpawned = true
+            // Выбираем тип препятствия: одно специальное, остальные NORMAL
+            val type = if (index == specialObstacleIndex) {
                 selectRandomObstacleType()
             } else {
-                // Остальные всегда NORMAL
                 ObstacleType.NORMAL
             }
-            val obstacle = Obstacle(x, 0f, type, speedBoost, 
+            val obstacle = Obstacle(x, 0f, type, speedBoost,
                 if (type == ObstacleType.LANE_CHANGER) lanePositions else null)
 
             if (slowdownActive) {
