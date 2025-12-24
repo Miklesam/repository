@@ -372,9 +372,6 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             val availableForRandom = (0 until laneCount).toSet() - lanesToSpawnIn
             lanesToSpawnIn.addAll(availableForRandom.shuffled().take(remainingNeeded))
         }
-        // Определяем, будет ли одно специальное препятствие (не NORMAL)
-        val hasSpecialObstacle = lanesToSpawnIn.size > 1 && (0..100).random() < 30 // 30% вероятность специального препятствия
-        var specialObstacleSpawned = false
 
         // Проверяем, есть ли разблокированные специальные типы препятствий
         val unlockedTypes = getUnlockedObstacleTypes()
