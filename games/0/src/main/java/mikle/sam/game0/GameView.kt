@@ -584,17 +584,32 @@ class GameView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                     val endY = event.y
                     val deltaX = endX - startX
                     val deltaY = endY - startY
-                    if (abs(deltaX) > abs(deltaY)) {
-                        if (deltaX > 100) {
+                    val totalDelta = abs(deltaX) + abs(deltaY)
+                    
+                    // Если движение маленькое (тап), обрабатываем как тап по части экрана
+                    if (totalDelta < 50) {
+                        // Тап в правой части экрана - перемещение вправо
+                        if (endX > width / 2f) {
                             player.moveRight()
-                        } else if (deltaX < -100) {
+                        } 
+                        // Тап в левой части экрана - перемещение влево
+                        else {
                             player.moveLeft()
                         }
                     } else {
-                        if (deltaY > 100) {
-                            slowDownObstacles()
-                        } else if (deltaY < -100) {
-                            speedUpObstacles()
+                        // Обработка свайпов (существующая логика)
+                        if (abs(deltaX) > abs(deltaY)) {
+                            if (deltaX > 100) {
+                                player.moveRight()
+                            } else if (deltaX < -100) {
+                                player.moveLeft()
+                            }
+                        } else {
+                            if (deltaY > 100) {
+                                slowDownObstacles()
+                            } else if (deltaY < -100) {
+                                speedUpObstacles()
+                            }
                         }
                     }
                 }
